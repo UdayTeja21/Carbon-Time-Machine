@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Upload, Image, Leaf, AlertTriangle, CheckCircle2, ArrowRight } from "lucide-react"
+import { Upload, Image as ImageIcon, Leaf, AlertTriangle, CheckCircle2, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
