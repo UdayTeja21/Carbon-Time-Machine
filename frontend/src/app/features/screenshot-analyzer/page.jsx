@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import Image from "next/image"
 import { Upload, ShoppingCart, Leaf, CheckCircle2, ArrowRight, Package } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -89,7 +90,7 @@ export default function ScreenshotAnalyzerPage() {
                       exit={{ opacity: 0 }}
                       className="w-full relative rounded-xl overflow-hidden shadow-md"
                     >
-                      <img src={imagePreview} alt="Preview" className="w-full h-auto object-cover max-h-[400px]" />
+                      <Image src={imagePreview} alt="Preview" width={400} height={400} className="w-full h-auto object-cover max-h-[400px]" />
                       {!isAnalyzing && (
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
                           <p className="text-white font-medium flex items-center"><Upload className="mr-2 h-4 w-4" /> Change Image</p>

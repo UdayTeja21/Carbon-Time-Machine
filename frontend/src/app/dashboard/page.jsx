@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useAuth } from "@/lib/firebase/AuthContext"
-import { getUserDashboardStats } from "@/lib/firebase/firestore"
+import { useDashboardStats } from "@/hooks/useDashboardStats"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
@@ -40,32 +40,16 @@ const itemVariants = {
 export default function DashboardPage() {
   const { user } = useAuth()
   const [mounted, setMounted] = useState(false)
-  const [stats, setStats] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { stats, isLoading } = useDashboardStats()
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      if (user) {
-        setIsLoading(true)
-        const userStats = await getUserDashboardStats(user.uid)
-        setStats(userStats)
-        setIsLoading(false)
-      } else {
-        setStats(null)
-        setIsLoading(false)
-      }
-    }
-    fetchStats()
-  }, [user])
-
   if (!mounted) return null
 
   return (
-    <div className="flex-1 p-6 lg:p-8 bg-zinc-50 dark:bg-black/20">
+    <main className="flex-1 p-6 lg:p-8 bg-zinc-50 dark:bg-black/20">
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
@@ -76,8 +60,8 @@ export default function DashboardPage() {
           </div>
           <div className="mt-4 md:mt-0 flex space-x-3">
             <Link href="/features/carbon-lens">
-              <Button className="bg-green-600 hover:bg-green-700 text-white">
-                <Leaf className="w-4 h-4 mr-2" /> New Analysis
+              <Button aria-label="Start a new carbon lens analysis" className="bg-green-600 hover:bg-green-700 text-white">
+                <Leaf className="w-4 h-4 mr-2" aria-hidden="true" /> New Analysis
               </Button>
             </Link>
           </div>
@@ -93,14 +77,14 @@ export default function DashboardPage() {
             <Card className="bg-gradient-to-br from-green-50 to-white dark:from-green-950/20 dark:to-slate-900 border-green-100 dark:border-green-900/50">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-green-800 dark:text-green-400">Carbon Score</CardTitle>
-                <Leaf className="h-4 w-4 text-green-600" />
+                <Leaf className="h-4 w-4 text-green-600" aria-hidden="true" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-700 dark:text-green-300">
                   {isLoading ? "..." : stats?.totalScore || 0} Points
                 </div>
                 <p className="text-xs text-green-600/80 dark:text-green-400/80 flex items-center mt-1">
-                  <ArrowUpRight className="h-3 w-3 mr-1" />
+                  <ArrowUpRight className="h-3 w-3 mr-1" aria-hidden="true" />
                   Based on your impact
                 </p>
               </CardContent>
@@ -120,6 +104,7 @@ export default function DashboardPage() {
                   strokeLinejoin="round"
                   strokeWidth="2"
                   className="h-4 w-4 text-muted-foreground"
+                  aria-hidden="true"
                 >
                   <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                 </svg>
@@ -139,12 +124,12 @@ export default function DashboardPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Water Saved</CardTitle>
-                <Droplet className="h-4 w-4 text-blue-500" />
+                <Droplet className="h-4 w-4 text-blue-500" aria-hidden="true" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">450 L</div>
                 <p className="text-xs text-blue-500 flex items-center mt-1">
-                  <ArrowUpRight className="h-3 w-3 mr-1" />
+                  <ArrowUpRight className="h-3 w-3 mr-1" aria-hidden="true" />
                   +2.1% from last week
                 </p>
               </CardContent>
@@ -154,22 +139,21 @@ export default function DashboardPage() {
           <motion.div variants={itemVariants}>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Challenges</CardTitle>
-                <Zap className="h-4 w-4 text-yellow-500" />
+                <CardTitle className="text-sm font-medium">Reduction Goal</CardTitle>
+                <Leaf className="h-4 w-4 text-emerald-500" aria-hidden="true" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {isLoading ? "..." : (stats?.activitiesCount || 0)}
-                </div>
-                <div className="mt-2 text-xs text-muted-foreground">
-                  <span className="mt-1 inline-block">Activities tracked over last 30 days</span>
-                </div>
+                <div className="text-2xl font-bold">20%</div>
+                <Progress value={65} className="h-2 mt-3" aria-label="Reduction goal progress" />
+                <p className="text-xs text-muted-foreground mt-2">
+                  65% of monthly goal reached
+                </p>
               </CardContent>
             </Card>
           </motion.div>
         </motion.div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-7" aria-label="Dashboard widgets">
           <Card className="col-span-4">
             <CardHeader>
               <CardTitle>Emission Trends</CardTitle>
@@ -177,7 +161,7 @@ export default function DashboardPage() {
                 Your daily CO2 emissions over the past week.
               </CardDescription>
             </CardHeader>
-            <CardContent className="pl-2 h-[300px]">
+            <CardContent className="pl-2 h-[300px]" aria-label="Line chart of weekly emissions">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={stats?.weeklyData || []} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <defs>
@@ -205,9 +189,9 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                <div className="flex p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl" role="article" aria-label="Recommendation: Switch Commute Route">
                   <div className="bg-blue-100 dark:bg-blue-800 p-2 rounded-lg h-fit mr-3">
-                    <Map className="w-5 h-5 text-blue-600 dark:text-blue-300" />
+                    <Map className="w-5 h-5 text-blue-600 dark:text-blue-300" aria-hidden="true" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-sm">Switch Commute Route</h4>
@@ -217,9 +201,9 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="flex p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+                <div className="flex p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl" role="article" aria-label="Recommendation: Energy Spike Detected">
                   <div className="bg-amber-100 dark:bg-amber-800 p-2 rounded-lg h-fit mr-3">
-                    <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-300" />
+                    <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-300" aria-hidden="true" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-sm">Energy Spike Detected</h4>
@@ -229,18 +213,23 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
-              <div className="mt-6">
+              <div className="mt-6 flex flex-col space-y-3">
                 <Link href="/features/decision-navigator">
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full" aria-label="Ask Green Decision Navigator">
                     Ask Green Decision Navigator
+                  </Button>
+                </Link>
+                <Link href="/features/future-simulator">
+                  <Button variant="secondary" className="w-full bg-blue-100 hover:bg-blue-200 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50" aria-label="Forecast your future impact">
+                    Forecast Future Impact
                   </Button>
                 </Link>
               </div>
             </CardContent>
           </Card>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   )
 }
 
